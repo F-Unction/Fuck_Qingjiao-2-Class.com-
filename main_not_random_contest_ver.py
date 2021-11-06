@@ -10,6 +10,9 @@ import http.client
 import re
 import xlrd  # 导入库
 import random
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 taskNum = 0
 taskBigNum = 0
@@ -19,9 +22,9 @@ taskContestNum = 0
 def Function(account, password):
     reqtoken, sid = Get_Cookies()
     Login(account, password, reqtoken, sid)
-    Start3(reqtoken, sid)
+    Start9(reqtoken, sid)
 
-
+#登录
 def Login(account, password, reqtoken, sid):
     conn = http.client.HTTPSConnection("www.2-class.com")
     payload = "{\"account\":\"" + account + "\",\"password\":\"" + password + "\",\"checkCode\":\"\"," \
@@ -38,7 +41,7 @@ def Login(account, password, reqtoken, sid):
         'Sec-Fetch-Site': 'same-origin',
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Dest': 'empty',
-        'Referer': 'https://www.2-class.com/courses',
+        'Referer': 'https://2-class.com/competition',
         'Accept-Encoding': 'gzip, deflate, br',
         'Accept-Language': 'zh-CN,zh;q=0.9',
         'Cookie': 'sid=' + sid
@@ -46,9 +49,9 @@ def Login(account, password, reqtoken, sid):
     conn.request("POST", "/api/user/login", payload, headers)
     res = conn.getresponse()
     data = res.read()
-    # print(data.decode("utf-8"))
+    print(data.decode("utf-8"))
 
-
+#获取Cookies
 def Get_Cookies():
     conn = http.client.HTTPSConnection("www.2-class.com")
     payload = ''
@@ -87,6 +90,8 @@ def Compelete_Task(payload, sid):
         global taskNum
         taskNum += 1
 
+
+#期末考试
 def Compelete_Final_Task(reqtoken, sid):
     conn = http.client.HTTPSConnection("2-class.com")
     payload = "{\"list\":[{\"questionId\":691,\"questionContent\":\"D\"},{\"questionId\":692,"\
@@ -118,9 +123,10 @@ def Compelete_Final_Task(reqtoken, sid):
         global taskBigNum
         taskBigNum += 1
 
-
+#知识竞赛
 def Compelete_Contest_Task(reqtoken, sid):
     conn = http.client.HTTPSConnection("2-class.com")
+    time = random.randint(230, 400)#做题时间
     payload = "{\"list\":[{\"questionId\":2948,\"questionContent\":\"D\"},{\"questionId\":2949," \
               "\"questionContent\":\"B\"},{\"questionId\":2888,\"questionContent\":\"B\"},{\"questionId\":2889," \
               "\"questionContent\":\"D\"},{\"questionId\":2893,\"questionContent\":\"B\"},{\"questionId\":2957," \
@@ -131,19 +137,19 @@ def Compelete_Contest_Task(reqtoken, sid):
               "\"questionContent\":\"A\"},{\"questionId\":2905,\"questionContent\":\"B\"},{\"questionId\":2906," \
               "\"questionContent\":\"B\"},{\"questionId\":2939,\"questionContent\":\"B\"},{\"questionId\":2909," \
               "\"questionContent\":\"A\"},{\"questionId\":2911,\"questionContent\":\"A\"},{\"questionId\":2912," \
-              "\"questionContent\":\"B\"}],\"time\":281,\"reqtoken\":\"" + reqtoken + "\"} "
+              "\"questionContent\":\"B\"}],\"time\":" + str(time) + ",\"reqtoken\":\"" + reqtoken + "\"} "
     headers = {
-        'Host': ' 2-class.com',
-        'Connection': ' keep-alive',
+        'Host': '2-class.com',
+        'Connection': 'keep-alive',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                       'Chrome/86.0.4240.75 Safari/537.36',
-        'Content-Type': ' application/json;charset=UTF-8',
-        'Accept': ' */*',
-        'Origin': ' https://2-class.com',
-        'Sec-Fetch-Site': ' same-origin',
-        'Sec-Fetch-Mode': ' cors',
-        'Sec-Fetch-Dest': ' empty',
-        'Accept-Encoding': ' gzip, deflate, br',
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Accept': '*/*',
+        'Origin': 'https://2-class.com',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Dest': 'empty',
+        'Accept-Encoding': 'gzip, deflate, br',
         'Accept-Language': ' zh-CN,zh-HK;q=0.9,zh;q=0.8,en;q=0.7',
         'Cookie': ' sid=' + sid + ';'
     }
@@ -211,8 +217,13 @@ def Start(reqtoken, sid):
 
 
 # 五年级
-def Start3(reqtoken, sid):
-    print("payload已过期！")
+def Start5(reqtoken, sid):
+    print(
+        "-----------------------------------------------------------" + sid + "-----------------------------------------------------------")
+    payload = "{\"courseId\":\"1107\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"0,2,3\"},{\"examId\":2," \
+              "\"answer\":\"1\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
+    Compelete_Task(payload, sid)
+    Compelete_Contest_Task(reqtoken, sid)
     return
     print(
         "-----------------------------------------------------------" + sid + "-----------------------------------------------------------")
@@ -243,29 +254,18 @@ def Start3(reqtoken, sid):
     Compelete_Contest_Task(reqtoken, sid)
     print("\n")
     
-# 初三
-def Start9(reqtoken, sid):
-    print("payload已过期！")
-    return
+
+#六年级
+def Start6(reqtoken, sid):
+    #Compelete_Final_Task(reqtoken, sid)
     print(
         "-----------------------------------------------------------" + sid + "-----------------------------------------------------------")
-    payload = "{\"courseId\":\"861\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"0,1,2\"},{\"examId\":2,\"answer\":\"0,1,2,3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
+    payload = "{\"courseId\":\"1098\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":1},{\"examId\":2,\"answer\":\"1,2,3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"}"
     Compelete_Task(payload, sid)
-    payload = "{\"courseId\":\"839\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"0,1,3\"},{\"examId\":2,\"answer\":\"1,3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
+    payload = "{\"courseId\":\"1097\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"2\"},{\"examId\":2,\"answer\":\"3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"}"
     Compelete_Task(payload, sid)
-    payload = "{\"courseId\":\"840\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"1,2\"},{\"examId\":2,\"answer\":\"0,1,2,3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
-    Compelete_Task(payload, sid)
-    payload = "{\"courseId\":\"768\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"0,1\"},{\"examId\":2,\"answer\":2},{\"examId\":3,\"answer\":\"0,1,2,3\"},{\"examId\":4,\"answer\":\"0,1,2,3\"},{\"examId\":5,\"answer\":3}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
-    Compelete_Task(payload, sid)
-    payload = "{\"courseId\":\"767\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":2},{\"examId\":2,\"answer\":0},{\"examId\":3,\"answer\":0},{\"examId\":4,\"answer\":0},{\"examId\":5,\"answer\":1}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
-    Compelete_Task(payload, sid)
-    Compelete_Final_Task(reqtoken, sid)
     Compelete_Contest_Task(reqtoken, sid)
-    print("\n")
 
-# 初一
-def Start4(reqtoken, sid):
-    print("payload已过期！")
     return
     print(
         "-----------------------------------------------------------" + sid + "-----------------------------------------------------------")
@@ -308,6 +308,60 @@ def Start4(reqtoken, sid):
     print("\n")
 
 
+#七年级
+def Start7(reqtoken, sid):
+    #Compelete_Final_Task(reqtoken, sid)
+    print(
+        "-----------------------------------------------------------" + sid + "-----------------------------------------------------------")
+    payload = "{\"courseId\":\"1108\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":0},{\"examId\":2,\"answer\":\"0,1,2\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"}"
+    Compelete_Task(payload, sid)
+    payload = "{\"courseId\":\"1096\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"0,2\"},{\"examId\":2,\"answer\":\"0,3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"}"
+    Compelete_Task(payload, sid)
+    Compelete_Contest_Task(reqtoken, sid)
+    
+    return
+
+def Start8(reqtoken, sid):
+    #Compelete_Final_Task(reqtoken, sid)
+    print(
+        "-----------------------------------------------------------" + sid + "-----------------------------------------------------------")
+    payload = "{\"courseId\":\"1109\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"0,1,2\"},{\"examId\":2,\"answer\":2}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"}"
+    Compelete_Task(payload, sid)
+    payload = "{\"courseId\":\"1106\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":1},{\"examId\":2,\"answer\":1},{\"examId\":3,\"answer\":\"0,1,2\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"}"
+    Compelete_Task(payload, sid)
+    Compelete_Contest_Task(reqtoken, sid)
+    
+    return
+
+#九年级
+def Start9(reqtoken, sid):
+    #Compelete_Final_Task(reqtoken, sid)
+    print(
+        "-----------------------------------------------------------" + sid + "-----------------------------------------------------------")
+    payload = "{\"courseId\":\"1110\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"0,1,2\"},{\"examId\":2,\"answer\":\"0,1,2,3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"}"
+    Compelete_Task(payload, sid)
+    payload = "{\"courseId\":\"1092\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"1,2\"},{\"examId\":2,\"answer\":\"0,1,2,3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"}"
+    Compelete_Task(payload, sid)
+    Compelete_Contest_Task(reqtoken, sid)
+    
+    return
+    print(
+        "-----------------------------------------------------------" + sid + "-----------------------------------------------------------")
+    payload = "{\"courseId\":\"861\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"0,1,2\"},{\"examId\":2,\"answer\":\"0,1,2,3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
+    Compelete_Task(payload, sid)
+    payload = "{\"courseId\":\"839\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"0,1,3\"},{\"examId\":2,\"answer\":\"1,3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
+    Compelete_Task(payload, sid)
+    payload = "{\"courseId\":\"840\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"1,2\"},{\"examId\":2,\"answer\":\"0,1,2,3\"}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
+    Compelete_Task(payload, sid)
+    payload = "{\"courseId\":\"768\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":\"0,1\"},{\"examId\":2,\"answer\":2},{\"examId\":3,\"answer\":\"0,1,2,3\"},{\"examId\":4,\"answer\":\"0,1,2,3\"},{\"examId\":5,\"answer\":3}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
+    Compelete_Task(payload, sid)
+    payload = "{\"courseId\":\"767\",\"examCommitReqDataList\":[{\"examId\":1,\"answer\":2},{\"examId\":2,\"answer\":0},{\"examId\":3,\"answer\":0},{\"examId\":4,\"answer\":0},{\"examId\":5,\"answer\":1}],\"exam\":\"course\",\"reqtoken\":\"" + reqtoken + "\"} "
+    Compelete_Task(payload, sid)
+    Compelete_Final_Task(reqtoken, sid)
+    Compelete_Contest_Task(reqtoken, sid)
+    print("\n")
+
+
 def B():
     global taskNum
     global taskBigNum
@@ -315,7 +369,7 @@ def B():
     print(" ___________             __     ________  .__                   __.__")
     print(" \\_   _____/_ __   ____ |  | __ \\_____  \\ |__| ____    ____    |__|__|____    ____")
     print("  |    __)|  |  \\_/ ___\\|  |/ /  /  / \\  \\|  |/    \\  / ___\\   |  |  \\__  \\  /  _ \\")
-    print("|     \\ |  |  /\\  \\___|    <  /   \\_/.  \\  |   |  \\/ /_/  >  |  |  |/ __ \\(  <_> )")
+    print("  |     \\ |  |  /\\  \\___|    <  /   \\_/.  \\  |   |  \\/ /_/  >  |  |  |/ __ \\(  <_> )")
     print("  \\___  / |____/  \\___  >__|_ \\ \\_____\\ \\_/__|___|  /\\___  /\\__|  |__(____  /\\____/")
     print("      \\/              \\/     \\/        \\__>       \\//_____/\\______|       \\/")
     print("\033[33m")
@@ -328,12 +382,16 @@ def B():
 
 
 def Piliang():
-    xlsx = xlrd.open_workbook("./Student_Qingjiao_List.xls")
+    xlsx = xlrd.open_workbook("./Student_Qingjiao_List.xlsx")
     sheet1 = xlsx.sheets()[0]
     i = 0
     while i < sheet1.nrows:
+        account = sheet1.row_values(i)[0]
+        password = str(sheet1.row_values(i)[1])[0:9]
         # Random=random.randint(0,1900);
-        Function(sheet1.row_values(i)[0], str(sheet1.row_values(i)[1])[0:8])
+        print("------------------正在完成学生----------" + account + "-------------账号任务-------------")
+        Function(account, password)
+        print("-----学生-----" + account + "--------------------账号任务已完成--------------------------")
         i += 1
 
 
